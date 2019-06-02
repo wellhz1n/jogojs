@@ -15,7 +15,17 @@ var blocks = [];
 //player
 var caracter = new player(10,10,50,50,"#00f");
 caracter.speed = 4;
+var obj = new player(200,200,100,50,"#ff0");
 sprites.push(caracter);
+sprites.push(obj);
+blocks.push(obj);
+var block2 = new player(200, 300, 100, 50, "#8B6914");
+	sprites.push(block2);
+	blocks.push(block2);
+	
+	var block3 = new player(50, 100, 20, 150 , "#7F7F7F");
+	sprites.push(block3);
+	blocks.push(block3);
     //entrada
 	window.addEventListener("keydown",function(e){
         var key = e.keyCode;
@@ -87,6 +97,17 @@ function update(){
     }
 caracter.x = Math.max(0,Math.min(600 -caracter.wid,caracter.x));
 caracter.y = Math.max(0,Math.min(600 - caracter.hei, caracter.y));
+
+//colisoes
+ for(var i in blocks){
+     var blk = blocks[i];
+     if(blk.visible){
+         blockRect(caracter,blk);
+
+     }
+ }
+
+
 }
 function render(){
     ctx.clearRect(0,0,600,600);
@@ -99,6 +120,7 @@ function render(){
             ctx.fillRect(spr.x,spr.y,spr.wid,spr.hei);
         }
     }
+  
 }
     loop();
 });
