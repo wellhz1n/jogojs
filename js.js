@@ -1,76 +1,111 @@
 $(document).ready(()=>{
 
+//canvas em arquivo separado
 
-            var x =10;
-            var y = 10;
-            var hei = 30;
-            var wid = 30;
-            var pontuacao = 0;
-            var obx = Math.random() * (550 - 10) + 10;
-            var oby = Math.random() * (550 - 10) + 10;
-            // function objeto(x,y, wid, hei) {
-            //     ctx.fillStyle = '#ff0000'; // Fill color of rectangle drawn
-            //     ctx.fillRect(x,y, wid, hei);
-            // }
-            
-    // function desenhar(x,y,wid,hei) {
-    //     ctx.fillStyle = '#666'; // Fill color of rectangle drawn
-    //     ctx.fillRect(x, y, wid, hei); //This will draw a rectangle of 20x20
-    //     ctx.strokeStyle = "#000000";
-    //     ctx.strokeRect(0,0,600,600);
-    // }
+//teclas
+var LEFT = 37 , UP = 38 , RIGHT = 39 , DOWN = 40;
 
-    var p = new player(10,10,30,30,"#0000ff");
-    p.desenhaplayer();
-    // desenhar(x,y,wid,hei);
+//movimento
+var mvLeft = mvUp = mvRight = mvDown = false;   
 
-        window.onkeydown = (e)=>{
-            $("#pontuacao").text("Score: " + pontuacao);
-            var key = e.keyCode;
-            console.log(key);
-            console.log(x);
-            if(key === 39 && x < 550){
-                x = x+20;
+//Arrays
+var sprites = [];
+var blocks = [];
 
-
-            } 
-            else if(key == 37 && x>10){
-
-                    x= x-20;
-
-            }
-            else if(key === 40 && y < 550){
-                y = y+20;
-
-
-            } 
-            else if(key == 38 && y>10){
-
-                    y= y-20;
-
-            }
-            // ctx.clearRect(0,0, 600, 600);
-            // desenhar(x,y,wid,hei);
-            if(pontuacao >= 0){
-
-                objeto(obx,oby,wid,hei);
-            }
-            else{
-               
-                
-
-            }
-            if(x < obx + wid && x + wid > obx && y < oby + hei && y+hei > oby){
-                pontuacao++;
-                // ctx.clearRect(0,0, 600, 600);
-                // desenhar(x,y,wid,hei);
+//player
+var caracter = new player(10,10,50,50,"#00f");
+caracter.speed = 4;
+sprites.push(caracter);
+    //entrada
+	window.addEventListener("keydown",function(e){
+        var key = e.keyCode;
+        console.log(key);
+		switch(key){
+			case LEFT:
+				mvLeft = true;
+				break;
+			case UP:
+				mvUp = true;
+				break;
+			case RIGHT:
+				mvRight = true;
+				break;
+			case DOWN:
+				mvDown = true;
+				break;
+		}
+	},false);
+	
+	//Evento disparado quando uma tecla é solta
+	window.addEventListener("keyup",function(e){
+		var key = e.keyCode;
+		switch(key){
+			case LEFT:
+				mvLeft = false;
+				break;
+			case UP:
+				mvUp = false;
+				break;
+			case RIGHT:
+				mvRight = false;
+				break;
+			case DOWN:
+				mvDown = false;
+				break;
+		}
+	},false);
 
 
-            }
-        }
 
+//funcoes
+
+
+
+function loop(){
+    window.requestAnimationFrame(loop,canvas);
+    update();
+    render();
+
+}
+function update(){
+   if (mvLeft && !mvRight){
+       
+            caracter.x -= caracter.speed;
+    }
+    if (mvRight && !mvLeft){
+       
+        caracter.x += caracter.speed;
+    }
+    if (mvUp && !mvDown){
         
-
-
+        caracter.y -= caracter.speed;
+    }    
+    if (mvDown && !mvUp){
+        
+        caracter.y += caracter.speed;
+        console.log(mvDown+" "+mvUp);
+    }
+caracter.x = Math.max(0,Math.min(600 -caracter.wid,caracter.x));
+caracter.y = Math.max(0,Math.min(600 - caracter.hei, caracter.y));
+}
+function render(){
+    ctx.clearRect(0,0,600,600);
+    ctx.strokeStyle = "#000000";
+    ctx.strokeRect(0,0,600,600);
+    for(var i in sprites){
+        var spr = sprites[i];
+        if(spr.visible){
+            ctx.fillStyle = spr.cor;
+            ctx.fillRect(spr.x,spr.y,spr.wid,spr.hei);
+        }
+    }
+}
+    loop();
 });
 
+
+// if(x < obx + wid && x + wid > obx && y < oby + hei && y+hei > oby){
+
+
+
+// }
