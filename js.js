@@ -1,5 +1,15 @@
 $(document).ready(()=>{
 
+
+    var pontuacao = 0 ;
+    $('#pontuacao').text("SCORE "+  pontuacao);
+       
+//var
+var ganhou = 0;
+var win = localStorage.getItem('win');
+
+
+
 //canvas em arquivo separado
 
 //teclas
@@ -15,17 +25,27 @@ var blocks = [];
 //player
 var caracter = new player(10,10,50,50,"#00f");
 caracter.speed = 4;
-var obj = new player(200,200,100,50,"#ff0");
+if(caracter.speed > 10){
+    caracter.speed --;
+}
 sprites.push(caracter);
-sprites.push(obj);
-blocks.push(obj);
-var block2 = new player(200, 300, 100, 50, "#8B6914");
-	sprites.push(block2);
-	blocks.push(block2);
-	
-	var block3 = new player(50, 100, 20, 150 , "#7F7F7F");
-	sprites.push(block3);
-	blocks.push(block3);
+if(win != null){
+    caracter.speed ++;
+ for (let i = 0; i < Math.floor(Math.random() *(10 +win -1) +1 ) ; i++) {
+        var obj = new player(Math.random()*(500 - 50) + 50 ,Math.random()* (500 - 0) +0 ,Math.floor(Math.random()*(150 - 10) + 10),Math.floor(Math.random()*(150 - 10)+10),getRandomColor());
+        sprites.push(obj);
+        blocks.push(obj);
+     
+ }
+}
+else{
+    for (let i = 0; i < Math.floor(Math.random() *(10 -1) +1 ) ; i++) {
+        var obj = new player(Math.random()*(500 - 50) + 50 ,Math.random()* (500 - 0) +0 ,Math.floor(Math.random()*(150 - 10) + 10),Math.floor(Math.random()*(150 - 10)+10),getRandomColor());
+        sprites.push(obj);
+        blocks.push(obj);
+     
+ }
+}
     //entrada
 	window.addEventListener("keydown",function(e){
         var key = e.keyCode;
@@ -68,8 +88,21 @@ var block2 = new player(200, 300, 100, 50, "#8B6914");
 
 
 //funcoes
+if(win!= null){
+var tempo = 30 - win;setInterval(() => {
+    tempo --;   
 
-
+    
+}, 1000);
+}
+else{
+    var tempo = 30 ;
+    setInterval(() => {
+        tempo --;   
+    
+        
+    }, 1000);
+}
 
 function loop(){
     window.requestAnimationFrame(loop,canvas);
@@ -78,6 +111,25 @@ function loop(){
 
 }
 function update(){
+    $("#time").text("   Time: " + tempo);
+
+    $("#bloc").text("BLocos: "+blocks.length);
+    for(var i in blocks){
+        var bloco = blocks[i];
+
+    if(bloco.x <=-50||bloco.x > 610 || bloco.y <= -50 || bloco.y > 610){
+        pontuacao += 10;
+        bloco.visible = false;
+        blocks.splice(i,1);
+        $('#pontuacao').text("SCORE "+  pontuacao);
+
+
+
+
+        }
+
+    }
+
    if (mvLeft && !mvRight){
        
             caracter.x -= caracter.speed;
@@ -95,19 +147,50 @@ function update(){
         caracter.y += caracter.speed;
         console.log(mvDown+" "+mvUp);
     }
-caracter.x = Math.max(0,Math.min(600 -caracter.wid,caracter.x));
-caracter.y = Math.max(0,Math.min(600 - caracter.hei, caracter.y));
+    if(caracter.x >= 610){
+        caracter.x = -40;
+    }
+    if(caracter.x <= -50){
+        caracter.x = 600;
+    }
+    if(caracter.y >= 610){
+        caracter.y = -40;
+    }
+    if(caracter.y <= -50){
+        caracter.y = 600;
+    }
+
+// caracter.x = Math.max(0,Math.min(650 -caracter.wid,caracter.x));
+// caracter.y = Math.max(0,Math.min(650 - caracter.hei, caracter.y));
 
 //colisoes
  for(var i in blocks){
      var blk = blocks[i];
      if(blk.visible){
-         blockRect(caracter,blk);
+         blockRect(blk,caracter);
 
      }
+
+
  }
 
 
+ if(tempo==0 && blocks == null || blocks.length == 0){
+     alert('You Win!');
+     ganhou ++;
+    localStorage.setItem("win",ganhou);
+
+     location.reload();
+ 
+ 
+ }
+ else if(tempo == 0 && blocks != null){
+
+
+    alert("Game OVER");
+        localStorage.removeItem("win");
+    location.reload();
+ }
 }
 function render(){
     ctx.clearRect(0,0,600,600);
@@ -120,6 +203,7 @@ function render(){
             ctx.fillRect(spr.x,spr.y,spr.wid,spr.hei);
         }
     }
+
   
 }
     loop();
